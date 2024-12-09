@@ -5,6 +5,7 @@ use crate::api::handler::day2::{
 use crate::api::handler::order::manifest;
 use axum::routing::post;
 use axum::{routing::get, Router};
+use crate::api::handler::day9::{post_milk, post_refill};
 
 mod api;
 
@@ -17,7 +18,9 @@ async fn main() -> shuttle_axum::ShuttleAxum {
         .route("/2/key", get(calculate_ip_sub))
         .route("/2/v6/dest", get(calculate_ipv6_add))
         .route("/2/v6/key", get(calculate_ipv6_sub))
-        .route("/5/manifest", post(manifest));
+        .route("/5/manifest", post(manifest))
+        .route("/9/milk", post(post_milk))
+        .route("/9/refill", post(post_refill));
 
     Ok(router.into())
 }
