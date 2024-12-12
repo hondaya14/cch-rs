@@ -1,5 +1,5 @@
-use std::str::FromStr;
 use serde::Deserialize;
+use std::str::FromStr;
 
 #[derive(Deserialize)]
 pub struct SpecifiedUnit {
@@ -30,7 +30,6 @@ impl SpecifiedUnit {
         }
     }
 }
-
 
 pub enum MilkUnitType {
     Liters,
