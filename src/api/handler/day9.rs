@@ -12,32 +12,28 @@ pub async fn post_milk(
     limiter: Arc<RateLimiter>,
 ) -> impl IntoResponse {
     let rate_limit_ok = limiter.try_acquire(1);
-    if rate_limit_ok {
-        return Response::builder()
-            .status(StatusCode::OK)
-            .body("Milk withdrawn\n".to_string())
-            .unwrap();
-    } else {
-        return Response::builder()
-            .status(StatusCode::TOO_MANY_REQUESTS)
-            .body("No milk available\n".to_string())
-            .unwrap();
-    }
 
     let content_type = headers.get("content-type");
     // option checkしながら、application/jsonかどうかを判定してbooleanの変数を持つ
     let is_unit_specified = content_type.map_or(
         false, |value| value == "application/json");
 
-    let units = units.unwrap();
-    if !units.validate() {
-        return Response::builder()
-            .status(StatusCode::BAD_REQUEST)
-            .body("".to_string())
-            .unwrap();
+    if !is_unit_specified {
+        if rate_limit_ok {
+            return Response::builder()
+                .status(StatusCode::OK)
+                .body("Milk withdrawn\n".to_string())
+                .unwrap();
+        } else {
+            return Response::builder()
+                .status(StatusCode::TOO_MANY_REQUESTS)
+                .body("No milk available\n".to_string())
+                .unwrap();
+        }
     }
 
-    if !is_unit_specified {
+    let units = units.unwrap();
+    if !units.validate() {
         return Response::builder()
             .status(StatusCode::BAD_REQUEST)
             .body("".to_string())
