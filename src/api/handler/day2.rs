@@ -101,17 +101,6 @@ impl IPAddV6 {
         ret
     }
 
-    fn to_string(self) -> String {
-        let mut ret = String::new();
-        for (i, ip) in self.from.iter().enumerate() {
-            ret.push_str(&format!("{:x}", ip));
-            if i != Self::IPV6_LEN - 1 {
-                ret.push(':');
-            }
-        }
-        ret
-    }
-
     fn xor(self) -> Vec<u16> {
         let mut ret = Vec::with_capacity(Self::IPV6_LEN);
         for (from, key) in self.from.iter().zip(self.key.iter()) {

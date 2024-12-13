@@ -1,7 +1,7 @@
 use serde::Deserialize;
 use std::str::FromStr;
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Debug)]
 pub struct SpecifiedUnit {
     pub liters: Option<f32>,
     pub litres: Option<f32>,
@@ -15,7 +15,7 @@ impl SpecifiedUnit {
             .iter()
             .filter(|&&unit| unit.is_some())
             .count();
-        count <= 1
+        count == 1
     }
 
     pub fn get_unit_type(&self) -> MilkUnitType {
@@ -31,6 +31,7 @@ impl SpecifiedUnit {
     }
 }
 
+#[derive(Debug)]
 pub enum MilkUnitType {
     Liters,
     Litres,
@@ -38,6 +39,7 @@ pub enum MilkUnitType {
     Pints,
 }
 
+#[derive(Debug)]
 pub struct MilkUnits {
     pub liters: f32,
     pub gallons: f32,
@@ -48,7 +50,7 @@ impl From<SpecifiedUnit> for MilkUnits {
     fn from(unit: SpecifiedUnit) -> Self {
         let unit_type = unit.get_unit_type();
         match unit_type {
-            MilkUnitType::Liters => MilkUnits::new(unit.liters.unwrap(), MilkUnitType::Litres),
+            MilkUnitType::Liters => MilkUnits::new(unit.liters.unwrap(), MilkUnitType::Liters),
             MilkUnitType::Litres => MilkUnits::new(unit.litres.unwrap(), MilkUnitType::Litres),
             MilkUnitType::Gallons => MilkUnits::new(unit.gallons.unwrap(), MilkUnitType::Gallons),
             MilkUnitType::Pints => MilkUnits::new(unit.pints.unwrap(), MilkUnitType::Pints),

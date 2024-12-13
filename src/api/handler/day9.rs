@@ -32,7 +32,16 @@ pub async fn post_milk(
         }
     }
 
-    let units = units.unwrap();
+    let units = match units {
+        Ok(valid_units) => valid_units,
+        Err(_) => {
+            return Response::builder()
+                .status(StatusCode::BAD_REQUEST)
+                .body("".to_string())
+                .unwrap();
+        }
+    };
+
     if !units.validate() {
         return Response::builder()
             .status(StatusCode::BAD_REQUEST)
@@ -41,14 +50,16 @@ pub async fn post_milk(
     }
 
     let milk_units: MilkUnits = if is_unit_specified {
+        println!("Debug: units.0 = {:?}", units.0);
         MilkUnits::from(units.0)
     } else {
         // default is liters
-        MilkUnits::new(1f32, MilkUnitType::Litres)
+        MilkUnits::new(1f32, MilkUnitType::Liters)
     };
+    println!("Debug: milk_units = {:?}", milk_units);
 
     match milk_units.unit_type {
-        MilkUnitType::Litres => {
+        MilkUnitType::Liters => {
             if is_unit_specified {
                 Response::builder()
                     .status(StatusCode::OK)
@@ -67,10 +78,16 @@ pub async fn post_milk(
                 .body(format!("{{\"liters\":{}}}", milk_units.liters))
                 .unwrap()
         }
-        MilkUnitType::Liters => {
+        MilkUnitType::Litres => {
             Response::builder()
                 .status(StatusCode::OK)
                 .body(format!("{{\"pints\":{}}}", milk_units.pints))
+                .unwrap()
+        }
+        MilkUnitType::Pints => {
+            Response::builder()
+                .status(StatusCode::OK)
+                .body(format!("{{\"litres\":{}}}", milk_units.liters))
                 .unwrap()
         }
         _ => {
